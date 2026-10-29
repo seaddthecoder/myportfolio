@@ -31,7 +31,7 @@ body::before {
     radial-gradient(ellipse 80% 45% at 90% 40%, #1f1f1f, rgba(0, 0, 0, 0) 70%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 -.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
   background-size: cover, auto, 240px 240px;
-  background-position: center bottom, 0 0, 0 0;
+  background-position: center calc(100% + var(--ry, 0px)), 0 0, 0 0;
   background-repeat: no-repeat, no-repeat, repeat;
 }
 /* The bottom of the screen goes dark, and the whole backdrop dims a bit more as you scroll down. */
@@ -196,13 +196,16 @@ footer .inner { padding-block: 1.5rem 2.5rem; color: var(--mid); font-size: 0.95
 </footer>
 
 <script>
-/* Dim the backdrop a little more the further down the page you are. */
+/* Dim the backdrop a little more the further down you are, and slide the road the opposite way to the scroll. */
 (function () {
   var root = document.documentElement;
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function update() {
     var max = root.scrollHeight - window.innerHeight;
     var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
     root.style.setProperty("--dim", (p * 0.55).toFixed(3));
+    var shift = still ? 0 : Math.min(window.scrollY * 0.3, window.innerHeight * 0.5);
+    root.style.setProperty("--ry", shift.toFixed(1) + "px");
   }
   window.addEventListener("scroll", update, { passive: true });
   window.addEventListener("resize", update);
